@@ -2,8 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 const AUTH_COOKIE = "zelvaa_auth";
 
-// Routes that never require auth.
-const PUBLIC_PATHS = ["/login", "/api/login"];
+// Routes that never require auth. The fingerprint *login* endpoints are public
+// because you use them precisely when you don't yet have a session. The
+// fingerprint *registration* endpoints (/api/webauthn/register/*) are NOT
+// listed here — they require an existing session and enforce it in-handler.
+const PUBLIC_PATHS = [
+  "/login",
+  "/api/login",
+  "/api/webauthn/status",
+  "/api/webauthn/auth/options",
+  "/api/webauthn/auth/verify",
+];
 
 function isPublic(pathname: string): boolean {
   return PUBLIC_PATHS.some(

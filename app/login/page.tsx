@@ -8,7 +8,10 @@ import {
   startRegistration,
 } from "@/lib/webauthn.client";
 
-type Mode = "password" | "enroll-offer";
+// "choice"  -> pick Password or Fingerprint
+// "password"-> password form
+// "enroll-offer" -> after password login, offer to set up fingerprint
+type Mode = "choice" | "password" | "enroll-offer";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,13 +19,19 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [mode, setMode] = useState<Mode>("password");
+  const [mode, setMode] = useState<Mode>("choice");
 
-  // Whether to show the "Login with fingerprint" button.
+  // Whether any fingerprint is registered (controls the Fingerprint button).
   const [fingerprintReady, setFingerprintReady] = useState(false);
+  const [supported, setSupported] = useState(false);
 
   useEffect(() => {
-    if (!isWebAuthnSupported()) return;
+    const ok = isWebAuthnSupported();
+    setSupported(ok);
+    if (!ok) {
+      setMode("password");
+      return;
+    }
     fetch("/api/webauthn/status")
       .then((r) => r.json())
       .then((d) => setFingerprintReady(Boolean(d?.registered)))
@@ -49,9 +58,9 @@ export default function LoginPage() {
         setError("Incorrect password");
         return;
       }
-      // Logged in. If this device can do biometrics and nothing is registered
+      // Logged in. If this device supports biometrics and none is registered
       // yet, offer to set up fingerprint login. Otherwise go straight in.
-      if (isWebAuthnSupported() && !fingerprintReady) {
+      if (supported && !fingerprintReady) {
         setMode("enroll-offer");
       } else {
         goToApp();
@@ -73,10 +82,11 @@ export default function LoginPage() {
       });
       if (!optRes.ok) {
         const d = await optRes.json().catch(() => ({}));
-        setError(d?.message || "Fingerprint login unavailable");
+        setError(d?.message || "No fingerprint registered yet");
         return;
       }
       const options = await optRes.json();
+      // Opens the OS biometric prompt.
       const assertion = await startAuthentication(options);
 
       const verifyRes = await fetch("/api/webauthn/auth/verify", {
@@ -91,7 +101,6 @@ export default function LoginPage() {
         setError(d?.message || "Fingerprint not recognized");
       }
     } catch (err) {
-      // User cancelled the OS prompt or no matching credential.
       if (err instanceof DOMException && err.name === "NotAllowedError") {
         setError("Fingerprint prompt cancelled");
       } else {
@@ -111,7 +120,8 @@ export default function LoginPage() {
         method: "POST",
       });
       if (!optRes.ok) {
-        setError("Couldn't start fingerprint setup");
+        const d = await optRes.json().catch(() => ({}));
+        setError(d?.message || "Couldn't start fingerprint setup");
         return;
       }
       const options = await optRes.json();
@@ -151,6 +161,36 @@ export default function LoginPage() {
         {error && <div className="alert-error">{error}</div>}
         {info && <div className="alert-info">{info}</div>}
 
+        {mode === "choice" && (
+          <div>
+            <button
+              className="btn"
+              type="button"
+              disabled={submitting}
+              onClick={() => {
+                setError("");
+                setMode("password");
+              }}
+            >
+              Login with password
+            </button>
+            <button
+              className="btn btn-secondary"
+              type="button"
+              disabled={submitting || !fingerprintReady}
+              onClick={onFingerprintLogin}
+            >
+              {submitting ? "Waiting…" : "🔒 Login with fingerprint"}
+            </button>
+            {!fingerprintReady && (
+              <p className="login-hint">
+                No fingerprint registered yet. Log in with the password once,
+                then set up fingerprint.
+              </p>
+            )}
+          </div>
+        )}
+
         {mode === "password" && (
           <form onSubmit={onSubmit}>
             <div className="field">
@@ -169,14 +209,17 @@ export default function LoginPage() {
               {submitting ? "Signing in…" : "Login"}
             </button>
 
-            {fingerprintReady && (
+            {supported && (
               <button
                 className="btn btn-secondary"
                 type="button"
                 disabled={submitting}
-                onClick={onFingerprintLogin}
+                onClick={() => {
+                  setError("");
+                  setMode("choice");
+                }}
               >
-                🔒 Login with fingerprint
+                ← Back
               </button>
             )}
           </form>

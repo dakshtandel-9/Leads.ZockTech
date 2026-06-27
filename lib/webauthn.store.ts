@@ -9,6 +9,16 @@ export interface StoredCredential {
 
 const CHALLENGE_TTL_MS = 5 * 60 * 1000; // challenges expire after 5 minutes
 
+/**
+ * True when an error is Supabase complaining that the webauthn tables don't
+ * exist yet — i.e. the schema SQL hasn't been run. Lets routes return a clear,
+ * actionable message instead of a generic 500.
+ */
+export function isMissingTableError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /webauthn_\w+/.test(msg) && /(schema cache|does not exist|find the table)/i.test(msg);
+}
+
 export async function saveChallenge(
   id: string,
   challenge: string,

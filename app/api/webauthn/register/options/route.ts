@@ -6,7 +6,11 @@ import {
   getRpConfig,
   newChallengeId,
 } from "@/lib/webauthn";
-import { getCredentials, saveChallenge } from "@/lib/webauthn.store";
+import {
+  getCredentials,
+  isMissingTableError,
+  saveChallenge,
+} from "@/lib/webauthn.store";
 
 /**
  * Begin fingerprint registration. Gated behind a valid password session — you
@@ -18,37 +22,54 @@ export async function POST(req: NextRequest) {
   }
 
   const { rpID, rpName } = getRpConfig(req);
-  const existing = await getCredentials();
 
-  const options = await generateRegistrationOptions({
-    rpName,
-    rpID,
-    userName: "zelvaa-user",
-    attestationType: "none",
-    excludeCredentials: existing.map((c) => ({
-      id: c.credential_id,
-      transports: c.transports
-        ? (c.transports.split(",") as any)
-        : undefined,
-    })),
-    authenticatorSelection: {
-      residentKey: "preferred",
-      userVerification: "preferred",
-      // Prefer the platform authenticator (Touch ID / Windows Hello / Android).
-      authenticatorAttachment: "platform",
-    },
-  });
+  try {
+    const existing = await getCredentials();
 
-  const challengeId = newChallengeId();
-  await saveChallenge(challengeId, options.challenge, "registration");
+    const options = await generateRegistrationOptions({
+      rpName,
+      rpID,
+      userName: "zelvaa-user",
+      attestationType: "none",
+      excludeCredentials: existing.map((c) => ({
+        id: c.credential_id,
+        transports: c.transports
+          ? (c.transports.split(",") as any)
+          : undefined,
+      })),
+      authenticatorSelection: {
+        residentKey: "preferred",
+        userVerification: "preferred",
+        // Prefer the platform authenticator (Touch ID / Windows Hello / Android).
+        authenticatorAttachment: "platform",
+      },
+    });
 
-  const res = NextResponse.json(options);
-  res.cookies.set(CHALLENGE_COOKIE, challengeId, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 300,
-  });
-  return res;
+    const challengeId = newChallengeId();
+    await saveChallenge(challengeId, options.challenge, "registration");
+
+    const res = NextResponse.json(options);
+    res.cookies.set(CHALLENGE_COOKIE, challengeId, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 300,
+    });
+    return res;
+  } catch (err) {
+    if (isMissingTableError(err)) {
+      return NextResponse.json(
+        {
+          message:
+            "Fingerprint tables not set up. Run supabase/schema.sql in Supabase.",
+        },
+        { status: 503 }
+      );
+    }
+    return NextResponse.json(
+      { message: "Couldn't start fingerprint setup" },
+      { status: 500 }
+    );
+  }
 }

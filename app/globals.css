@@ -63,6 +63,22 @@ a {
   letter-spacing: 0.2px;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-msg {
+  font-size: 13px;
+}
+.topbar-msg.ok {
+  color: #1d8a4a;
+}
+.topbar-msg.err {
+  color: #c0392b;
+}
+
 .brand span {
   color: var(--primary);
 }
@@ -614,6 +630,23 @@ table.leads tbody tr:last-child td {
   background: #fdecec;
   color: #c0392b;
   border: 1px solid #f4caca;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.login-hint {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.alert-info {
+  background: #eaf4ff;
+  color: #1d5db6;
+  border: 1px solid #c5dcf7;
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
