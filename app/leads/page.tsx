@@ -9,6 +9,8 @@ import LeadTable from "@/components/LeadTable";
 import Pagination from "@/components/Pagination";
 import LeadModal from "@/components/LeadModal";
 import LeadView from "@/components/LeadView";
+import UpcomingCards from "@/components/UpcomingCards";
+import StatRings from "@/components/StatRings";
 
 function matchesFilters(lead: Lead, f: Filters): boolean {
   if (f.search.trim()) {
@@ -96,6 +98,12 @@ export default function LeadsPage() {
           </Link>
         </div>
       </div>
+
+      {!loading && !error && <StatRings leads={leads} />}
+
+      {!loading && !error && (
+        <UpcomingCards leads={leads} onView={(l) => setViewing(l)} />
+      )}
 
       <LeadFilters filters={filters} onChange={setFilters} />
 

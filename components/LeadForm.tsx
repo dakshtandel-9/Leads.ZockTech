@@ -11,6 +11,7 @@ import {
   YES_NO_OPTIONS,
 } from "@/lib/types";
 import { createLead, updateLead } from "@/services/leads.service";
+import DateTime12 from "@/components/DateTime12";
 
 interface Props {
   mode: "create" | "edit";
@@ -26,6 +27,37 @@ function todayStr(): string {
   return `${d.getFullYear()}-${m}-${day}`;
 }
 
+// Format a Date as a LOCAL `YYYY-MM-DDTHH:mm` string (the picker's format).
+function dateToLocalInput(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}` +
+    `T${p(d.getHours())}:${p(d.getMinutes())}`
+  );
+}
+
+// Convert the picker's LOCAL `YYYY-MM-DDTHH:mm` string into a UTC ISO string
+// for storage. `new Date("YYYY-MM-DDTHH:mm")` parses as local time, so
+// .toISOString() yields the correct absolute instant. Returns null if empty.
+export function localInputToISO(value: string): string | null {
+  const s = value.trim();
+  if (!s) return null;
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+// Normalize a stored value (UTC `timestamptz` from Postgres, or a plain date)
+// into the LOCAL `YYYY-MM-DDTHH:mm` string the picker expects.
+function toDateTimeLocal(value?: string | null): string {
+  if (!value) return "";
+  // Date only -> midnight local, no TZ math needed.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00`;
+  // Anything with a time: parse as an absolute instant and render in local time.
+  const d = new Date(value);
+  if (!isNaN(d.getTime())) return dateToLocalInput(d);
+  return "";
+}
+
 type FormState = {
   inquiry_date: string;
   phone_number: string;
@@ -38,9 +70,11 @@ type FormState = {
   lead_status: string;
   call_message_detail: string;
   follow_up_date: string;
+  meeting_datetime: string;
   retry_count: string;
   invoice_status: string;
   proposal_status: string;
+  send_proposal: string;
   praposal_pricing: string;
 };
 
@@ -54,15 +88,17 @@ function fromLead(initial?: Lead): FormState {
     lead_priority: initial?.lead_priority ?? "",
     call_status: initial?.call_status ?? "",
     lead_person: initial?.lead_person ?? "",
-    lead_status: initial?.lead_status ?? "",
+    lead_status: initial?.lead_status ?? "New",
     call_message_detail: initial?.call_message_detail ?? "",
-    follow_up_date: initial?.follow_up_date ?? "",
+    follow_up_date: toDateTimeLocal(initial?.follow_up_date),
+    meeting_datetime: toDateTimeLocal(initial?.meeting_datetime),
     retry_count:
       initial?.retry_count === null || initial?.retry_count === undefined
         ? "0"
         : String(initial.retry_count),
     invoice_status: initial?.invoice_status ?? "No",
     proposal_status: initial?.proposal_status ?? "No",
+    send_proposal: initial?.send_proposal ?? "No",
     praposal_pricing:
       initial?.praposal_pricing === null ||
       initial?.praposal_pricing === undefined
@@ -115,11 +151,13 @@ export default function LeadForm({ mode, initial }: Props) {
       lead_priority: str(form.lead_priority),
       call_status: str(form.call_status),
       call_message_detail: str(form.call_message_detail),
-      follow_up_date: str(form.follow_up_date),
+      follow_up_date: localInputToISO(form.follow_up_date),
+      meeting_datetime: localInputToISO(form.meeting_datetime),
       retry_count: retry === null ? 0 : retry,
       lead_person: str(form.lead_person),
       invoice_status: str(form.invoice_status),
       proposal_status: str(form.proposal_status),
+      send_proposal: str(form.send_proposal),
       praposal_pricing: num(form.praposal_pricing),
       lead_status: str(form.lead_status),
     };
@@ -305,11 +343,18 @@ export default function LeadForm({ mode, initial }: Props) {
         <h3>Follow-up</h3>
         <div className="form-grid">
           <div className="field">
-            <label>Follow Up Date</label>
-            <input
-              type="date"
+            <label>Follow Up Date &amp; Time</label>
+            <DateTime12
               value={form.follow_up_date}
-              onChange={(e) => set("follow_up_date", e.target.value)}
+              onChange={(v) => set("follow_up_date", v)}
+            />
+          </div>
+
+          <div className="field">
+            <label>Meeting Fixed Date &amp; Time</label>
+            <DateTime12
+              value={form.meeting_datetime}
+              onChange={(v) => set("meeting_datetime", v)}
             />
           </div>
 
@@ -347,6 +392,20 @@ export default function LeadForm({ mode, initial }: Props) {
             <select
               value={form.proposal_status}
               onChange={(e) => set("proposal_status", e.target.value)}
+            >
+              {YES_NO_OPTIONS.map((v) => (
+                <option key={v} value={v}>
+                  {v}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="field">
+            <label>Send Proposal</label>
+            <select
+              value={form.send_proposal}
+              onChange={(e) => set("send_proposal", e.target.value)}
             >
               {YES_NO_OPTIONS.map((v) => (
                 <option key={v} value={v}>

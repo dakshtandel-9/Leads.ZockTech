@@ -39,12 +39,14 @@ function normalizePayload(body: LeadPayload) {
     call_status: str(body.call_status),
     call_message_detail: str(body.call_message_detail),
     follow_up_date: str(body.follow_up_date),
+    meeting_datetime: str(body.meeting_datetime),
     retry_count: body.retry_count === null || body.retry_count === undefined
       ? 0
       : num(body.retry_count) ?? 0,
     lead_person: str(body.lead_person),
     invoice_status: str(body.invoice_status),
     proposal_status: str(body.proposal_status),
+    send_proposal: str(body.send_proposal),
     praposal_pricing: num(body.praposal_pricing),
     lead_status: str(body.lead_status),
   };

@@ -32,6 +32,7 @@ export function fmtDateTime(value: string | null | undefined): string {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    hour12: true, // always show AM/PM, never 24-hour
   });
 }
 

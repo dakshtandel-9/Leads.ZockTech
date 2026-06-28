@@ -11,11 +11,13 @@ create table if not exists public.leads (
   lead_priority       text,            -- 'High' | 'Medium' | 'Low'
   call_status         text,            -- see CALL_STATUS options
   call_message_detail text,
-  follow_up_date      date,
+  follow_up_date      timestamptz,     -- date + time of next follow-up
+  meeting_datetime    timestamptz,     -- fixed meeting date + time
   retry_count         integer default 0,
   lead_person         text,            -- 'Daksh' | 'Aryan' | 'Abhishek' | 'Nihar'
   invoice_status      text,            -- 'Yes' | 'No'
   proposal_status     text,            -- 'Yes' | 'No'
+  send_proposal       text,            -- 'Yes' | 'No'
   praposal_pricing    numeric,         -- NOTE: keep this exact (mis)spelling
   created_at          timestamptz default now(),
   updated_at          timestamptz,
@@ -23,6 +25,19 @@ create table if not exists public.leads (
 );
 
 create index if not exists leads_inquiry_id_desc_idx on public.leads (inquiry_id desc);
+
+-- ---------------------------------------------------------------------------
+-- Migration for EXISTING tables created before follow_up_date carried a time.
+-- Safe to run repeatedly. If your `leads` table already has follow_up_date as
+-- a plain `date`, run these so the time-of-day is preserved instead of being
+-- truncated to midnight (which showed up in the UI as "12:00 AM").
+-- ---------------------------------------------------------------------------
+alter table public.leads
+  alter column follow_up_date type timestamptz using follow_up_date::timestamptz;
+alter table public.leads
+  add column if not exists meeting_datetime timestamptz;
+alter table public.leads
+  add column if not exists send_proposal text;
 
 -- All access happens through server-side route handlers using the anon key.
 -- ---------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Lead } from "@/lib/types";
-import { fmtDate, dash, priorityClass, statusClass } from "@/lib/format";
+import { fmtDate, fmtDateTime, dash, priorityClass, statusClass } from "@/lib/format";
 
 interface Props {
   leads: Lead[];
@@ -28,12 +28,16 @@ export default function LeadTable({ leads, onView }: Props) {
             <th>Call Status</th>
             <th>Call Message Detail</th>
             <th>Follow Up</th>
+            <th>Meeting</th>
             <th>Retry Count</th>
             <th>Lead Person</th>
             <th>Invoice Status</th>
             <th>Proposal Status</th>
+            <th>Send Proposal</th>
             <th>Proposal Pricing</th>
             <th>Lead Status</th>
+            <th>Created At</th>
+            <th>Updated At</th>
             <th className="col-actions">Actions</th>
           </tr>
         </thead>
@@ -55,12 +59,36 @@ export default function LeadTable({ leads, onView }: Props) {
                 )}
               </td>
               <td>{dash(lead.call_status)}</td>
-              <td className="cell-wrap">{dash(lead.call_message_detail)}</td>
-              <td>{fmtDate(lead.follow_up_date)}</td>
+              <td className="cell-message">
+                {lead.call_message_detail ? (
+                  <div className="cell-message-inner">
+                    <span
+                      className="cell-message-text"
+                      title={lead.call_message_detail}
+                    >
+                      {lead.call_message_detail}
+                    </span>
+                    <button
+                      type="button"
+                      className="info-btn"
+                      aria-label="View full message"
+                      title="View details"
+                      onClick={() => onView(lead)}
+                    >
+                      ⓘ
+                    </button>
+                  </div>
+                ) : (
+                  dash(lead.call_message_detail)
+                )}
+              </td>
+              <td>{fmtDateTime(lead.follow_up_date)}</td>
+              <td>{fmtDateTime(lead.meeting_datetime)}</td>
               <td>{dash(lead.retry_count)}</td>
               <td>{dash(lead.lead_person)}</td>
               <td>{dash(lead.invoice_status)}</td>
               <td>{dash(lead.proposal_status)}</td>
+              <td>{dash(lead.send_proposal)}</td>
               <td>{dash(lead.praposal_pricing)}</td>
               <td>
                 {lead.lead_status ? (
@@ -71,6 +99,8 @@ export default function LeadTable({ leads, onView }: Props) {
                   dash(lead.lead_status)
                 )}
               </td>
+              <td>{fmtDateTime(lead.created_at)}</td>
+              <td>{fmtDateTime(lead.updated_at)}</td>
               <td className="col-actions">
                 <button
                   className="btn-ghost btn"

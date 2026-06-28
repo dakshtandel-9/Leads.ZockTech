@@ -346,6 +346,62 @@ table.leads tbody tr:last-child td {
   max-width: 280px;
 }
 
+.cell-message {
+  max-width: 240px;
+}
+
+.cell-message-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Truncate the message to a single line; the ⓘ button opens the full detail. */
+.cell-message-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-btn {
+  flex: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--primary, #3457d5);
+  padding: 2px;
+  border-radius: 4px;
+}
+.info-btn:hover {
+  background: rgba(52, 87, 213, 0.1);
+}
+
+/* 12-hour datetime picker (DateTime12) */
+.dt12 {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.dt12-date {
+  flex: 1 1 150px;
+}
+.dt12-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.dt12-time select {
+  width: auto;
+  padding: 8px 6px;
+}
+.dt12-colon {
+  color: var(--muted);
+}
+
 .muted {
   color: var(--muted);
 }
@@ -663,4 +719,159 @@ table.leads tbody tr:last-child td {
   .detail-list {
     grid-template-columns: 130px 1fr;
   }
+  .upcoming-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Stat rings ---------- */
+.stat-rings {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.stat-ring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.stat-ring-count {
+  font-size: 20px;
+  font-weight: 700;
+  fill: var(--text);
+}
+.stat-ring-pct {
+  font-size: 11px;
+  font-weight: 600;
+}
+.stat-ring-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+}
+
+@media (max-width: 1100px) {
+  .stat-rings {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .stat-rings {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Upcoming cards ---------- */
+.upcoming-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.upcoming-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 1100px) and (min-width: 901px) {
+  .upcoming-grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.proposal-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.upcoming-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+}
+.upcoming-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.upcoming-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.upcoming-time {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+.upcoming-name {
+  font-weight: 600;
+  color: var(--text);
+}
+.upcoming-phone {
+  font-size: 14px;
+  color: var(--muted);
+}
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+}
+.upcoming-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+}
+.upcoming-item:first-child {
+  padding-top: 0;
+}
+.upcoming-item:last-child {
+  padding-bottom: 0;
+}
+.upcoming-item-sep {
+  border-top: 1px solid var(--border);
+}
+.upcoming-more {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.upcoming-more:hover {
+  background: rgba(52, 87, 213, 0.08);
+  border-color: #c9d3e6;
+}
+.upcoming-empty {
+  color: var(--muted);
+  font-size: 14px;
 }

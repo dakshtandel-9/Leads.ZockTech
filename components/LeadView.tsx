@@ -42,7 +42,10 @@ export default function LeadView({ lead }: { lead: Lead }) {
       <dd>{dash(lead.call_message_detail)}</dd>
 
       <dt>Follow Up Date</dt>
-      <dd>{fmtDate(lead.follow_up_date)}</dd>
+      <dd>{fmtDateTime(lead.follow_up_date)}</dd>
+
+      <dt>Meeting Fixed Date &amp; Time</dt>
+      <dd>{fmtDateTime(lead.meeting_datetime)}</dd>
 
       <dt>Retry Count</dt>
       <dd>{dash(lead.retry_count)}</dd>
@@ -55,6 +58,9 @@ export default function LeadView({ lead }: { lead: Lead }) {
 
       <dt>Proposal Status</dt>
       <dd>{dash(lead.proposal_status)}</dd>
+
+      <dt>Send Proposal</dt>
+      <dd>{dash(lead.send_proposal)}</dd>
 
       <dt>Proposal Pricing</dt>
       <dd>{dash(lead.praposal_pricing)}</dd>
