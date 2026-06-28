@@ -299,6 +299,7 @@ textarea {
 /* ---------- Table ---------- */
 .table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius);
 }
 
@@ -519,6 +520,9 @@ table.leads tbody tr:last-child td {
   box-shadow: 0 12px 40px rgba(16, 24, 40, 0.2);
   width: 100%;
   max-width: 640px;
+  max-height: calc(100vh - 96px);
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-head {
@@ -551,6 +555,7 @@ table.leads tbody tr:last-child td {
 
 .modal-body {
   padding: 20px;
+  overflow-y: auto;
 }
 
 .modal-foot {
@@ -823,6 +828,14 @@ table.leads tbody tr:last-child td {
   .stat-rings {
     gap: 10px;
     padding: 12px;
+  }
+
+  /* Modal uses more of the small screen. */
+  .modal-overlay {
+    padding: 16px 10px;
+  }
+  .modal {
+    max-height: calc(100vh - 32px);
   }
 }
 
