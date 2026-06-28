@@ -43,7 +43,11 @@ export default function LeadTable({ leads, onView }: Props) {
         </thead>
         <tbody>
           {leads.map((lead) => (
-            <tr key={lead.inquiry_id}>
+            <tr
+              key={lead.inquiry_id}
+              className="row-clickable"
+              onClick={() => onView(lead)}
+            >
               <td>{lead.inquiry_id}</td>
               <td>{fmtDate(lead.inquiry_date)}</td>
               <td>{dash(lead.customer_name)}</td>
@@ -101,7 +105,10 @@ export default function LeadTable({ leads, onView }: Props) {
               </td>
               <td>{fmtDateTime(lead.created_at)}</td>
               <td>{fmtDateTime(lead.updated_at)}</td>
-              <td className="col-actions">
+              <td
+                className="col-actions"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
                   className="btn-ghost btn"
                   type="button"

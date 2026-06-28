@@ -332,6 +332,10 @@ table.leads tbody tr:hover {
   background: #f8faff;
 }
 
+table.leads tbody tr.row-clickable {
+  cursor: pointer;
+}
+
 table.leads tbody tr:last-child td {
   border-bottom: none;
 }
@@ -770,6 +774,55 @@ table.leads tbody tr:last-child td {
 @media (max-width: 560px) {
   .stat-rings {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 600px) {
+  .container {
+    padding: 16px 12px 40px;
+  }
+
+  /* Topbar: let the brand + actions wrap instead of overflowing. */
+  .topbar-inner {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .topbar-actions {
+    flex-wrap: wrap;
+  }
+
+  /* Page header stacks; actions go full-width and share a row. */
+  .page-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .head-actions {
+    width: 100%;
+  }
+  .head-actions .btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Dashboard cards: one per row. */
+  .upcoming-grid,
+  .upcoming-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Filters: single column, full-width clear button. */
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+  .filters-clear .btn {
+    width: 100%;
+  }
+
+  /* Stat rings stay 2-up but a touch tighter. */
+  .stat-rings {
+    gap: 10px;
+    padding: 12px;
   }
 }
 
