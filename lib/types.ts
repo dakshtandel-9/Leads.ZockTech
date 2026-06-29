@@ -22,7 +22,9 @@ export interface Lead {
   call_message_detail: string | null;
   additional_message: string | null;
   follow_up_date: string | null;
+  follow_up_done: boolean | null;
   meeting_datetime: string | null;
+  meeting_done: boolean | null;
   retry_count: number | null;
   lead_person: string | null;
   invoice_status: YesNo | string | null;
@@ -46,7 +48,9 @@ export interface LeadPayload {           // create/update; inquiry_id only on up
   call_message_detail?: string | null;
   additional_message?: string | null;
   follow_up_date?: string | null;
+  follow_up_done?: boolean | null;
   meeting_datetime?: string | null;
+  meeting_done?: boolean | null;
   retry_count?: number | null;
   lead_person?: string | null;
   invoice_status?: string | null;
