@@ -12,6 +12,7 @@ import {
 } from "@/lib/types";
 import { createLead, updateLead } from "@/services/leads.service";
 import DateTime12 from "@/components/DateTime12";
+import LeadModal from "@/components/LeadModal";
 
 interface Props {
   mode: "create" | "edit";
@@ -115,10 +116,16 @@ export default function LeadForm({ mode, initial }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
   function set<K extends keyof FormState>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
   }
+
+  // Digits only, for building WhatsApp/tel links. Assumes the number already
+  // includes a country code (e.g. "+91 …" → "91…").
+  const phoneDigits = form.phone_number.replace(/\D/g, "");
+  const hasPhone = phoneDigits.length > 0;
 
   function validate(): boolean {
     const next: Record<string, string> = {};
@@ -175,6 +182,12 @@ export default function LeadForm({ mode, initial }: Props) {
     setServerError("");
     if (!validate()) return;
 
+    // Open the retry-count reminder before saving (easy to forget).
+    setShowConfirm(true);
+  }
+
+  async function doSave() {
+    setShowConfirm(false);
     setSubmitting(true);
     try {
       const payload = buildPayload();
@@ -199,6 +212,27 @@ export default function LeadForm({ mode, initial }: Props) {
   return (
     <form className="card card-pad" onSubmit={onSubmit}>
       {serverError && <div className="alert-error">{serverError}</div>}
+
+      <div className="contact-actions">
+        <a
+          className={hasPhone ? "btn-contact btn-whatsapp" : "btn-contact btn-whatsapp is-disabled"}
+          href={hasPhone ? `https://wa.me/${phoneDigits}` : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-disabled={!hasPhone}
+          onClick={(e) => !hasPhone && e.preventDefault()}
+        >
+          WhatsApp
+        </a>
+        <a
+          className={hasPhone ? "btn-contact btn-call" : "btn-contact btn-call is-disabled"}
+          href={hasPhone ? `tel:+${phoneDigits}` : undefined}
+          aria-disabled={!hasPhone}
+          onClick={(e) => !hasPhone && e.preventDefault()}
+        >
+          Call
+        </a>
+      </div>
 
       <div className="form-section">
         <h3>Basic Information</h3>
@@ -455,6 +489,41 @@ export default function LeadForm({ mode, initial }: Props) {
             : "Update Lead"}
         </button>
       </div>
+
+      {showConfirm && (
+        <LeadModal
+          title="Update Retry Count?"
+          onClose={() => setShowConfirm(false)}
+          footer={
+            <>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowConfirm(false)}
+              >
+                Go Back
+              </button>
+              <button type="button" className="btn" onClick={doSave}>
+                Save Lead
+              </button>
+            </>
+          }
+        >
+          <p className="confirm-text">
+            Don’t forget to update the retry count before saving.
+          </p>
+          <div className="field">
+            <label>Retry Count</label>
+            <input
+              type="number"
+              min="0"
+              autoFocus
+              value={form.retry_count}
+              onChange={(e) => set("retry_count", e.target.value)}
+            />
+          </div>
+        </LeadModal>
+      )}
     </form>
   );
 }

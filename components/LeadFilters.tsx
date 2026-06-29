@@ -76,6 +76,7 @@ export default function LeadFilters({ filters, onChange }: Props) {
             onChange={(e) => set("callStatus", e.target.value)}
           >
             <option value="">All</option>
+            <option value="__none__">None</option>
             {CALL_STATUS_OPTIONS.map((c) => (
               <option key={c} value={c}>
                 {c}

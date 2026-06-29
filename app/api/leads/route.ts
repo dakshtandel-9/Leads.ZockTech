@@ -50,6 +50,14 @@ function normalizePayload(body: LeadPayload) {
     send_proposal: str(body.send_proposal),
     praposal_pricing: num(body.praposal_pricing),
     lead_status: str(body.lead_status),
+    // Only set the "done" flags when the client explicitly sends a boolean
+    // (editing a date re-activates the item). Otherwise leave them untouched.
+    ...(typeof body.follow_up_done === "boolean"
+      ? { follow_up_done: body.follow_up_done }
+      : {}),
+    ...(typeof body.meeting_done === "boolean"
+      ? { meeting_done: body.meeting_done }
+      : {}),
   };
 }
 
@@ -157,6 +165,55 @@ export async function PUT(req: NextRequest) {
       message: "Lead updated",
       inquiry_id: data?.inquiry_id,
     });
+  } catch (e: any) {
+    return NextResponse.json(
+      { status: 500, message: e?.message ?? "Server error" },
+      { status: 500 }
+    );
+  }
+}
+
+// Lightweight partial update for the dashboard "done" flags only. Unlike PUT,
+// it doesn't touch any other column.
+export async function PATCH(req: NextRequest) {
+  if (!authed(req)) return unauthorized();
+
+  try {
+    const body = await req.json();
+    if (!body?.inquiry_id) {
+      return NextResponse.json(
+        { status: 400, message: "inquiry_id is required" },
+        { status: 400 }
+      );
+    }
+
+    const patch: Record<string, boolean> = {};
+    if (typeof body.follow_up_done === "boolean")
+      patch.follow_up_done = body.follow_up_done;
+    if (typeof body.meeting_done === "boolean")
+      patch.meeting_done = body.meeting_done;
+
+    if (Object.keys(patch).length === 0) {
+      return NextResponse.json(
+        { status: 400, message: "No valid fields to update" },
+        { status: 400 }
+      );
+    }
+
+    const supabase = getSupabase();
+    const { error } = await supabase
+      .from(TABLE)
+      .update(patch)
+      .eq("inquiry_id", body.inquiry_id);
+
+    if (error) {
+      return NextResponse.json(
+        { status: 500, message: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ status: 200, message: "Updated" });
   } catch (e: any) {
     return NextResponse.json(
       { status: 500, message: e?.message ?? "Server error" },

@@ -37,9 +37,9 @@ a {
 
 /* ---------- Layout ---------- */
 .container {
-  max-width: 1280px;
+  max-width: 1800px;
   margin: 0 auto;
-  padding: 24px 20px 48px;
+  padding: 24px 16px 48px;
 }
 
 .topbar {
@@ -48,9 +48,9 @@ a {
 }
 
 .topbar-inner {
-  max-width: 1280px;
+  max-width: 1800px;
   margin: 0 auto;
-  padding: 12px 20px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -565,6 +565,12 @@ table.leads tbody tr:last-child td {
   justify-content: flex-end;
   gap: 10px;
 }
+.confirm-text {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
 
 /* ---------- Detail view ---------- */
 .detail-list {
@@ -736,7 +742,7 @@ table.leads tbody tr:last-child td {
 /* ---------- Stat rings ---------- */
 .stat-rings {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(9, minmax(0, 1fr));
   gap: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -888,10 +894,89 @@ table.leads tbody tr:last-child td {
   color: var(--muted);
 }
 .upcoming-time {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   font-size: 18px;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: 4px;
+}
+.upcoming-time.is-overdue {
+  color: #dc2626;
+}
+.overdue-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.contact-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.btn-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #fff;
+  transition: opacity 0.15s ease, transform 0.05s ease;
+}
+.btn-contact:hover {
+  opacity: 0.9;
+}
+.btn-contact:active {
+  transform: translateY(1px);
+}
+.btn-whatsapp {
+  background: #25d366;
+}
+.btn-call {
+  background: var(--primary);
+}
+.btn-contact.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.btn-done {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.btn-done:hover:not(:disabled) {
+  background: rgba(22, 163, 74, 0.16);
+  border-color: rgba(22, 163, 74, 0.5);
+}
+.btn-done:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 .upcoming-name {
   font-weight: 600;

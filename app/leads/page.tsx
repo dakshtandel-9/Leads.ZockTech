@@ -27,7 +27,13 @@ function matchesFilters(lead: Lead, f: Filters): boolean {
     if (!haystack.includes(q)) return false;
   }
   if (f.priority && lead.lead_priority !== f.priority) return false;
-  if (f.callStatus && lead.call_status !== f.callStatus) return false;
+  if (f.callStatus) {
+    if (f.callStatus === "__none__") {
+      if (lead.call_status) return false;
+    } else if (lead.call_status !== f.callStatus) {
+      return false;
+    }
+  }
   if (f.leadStatus && lead.lead_status !== f.leadStatus) return false;
   if (f.leadPerson && lead.lead_person !== f.leadPerson) return false;
   if (f.followUpDate) {
@@ -102,7 +108,11 @@ export default function LeadsPage() {
       {!loading && !error && <StatRings leads={leads} />}
 
       {!loading && !error && (
-        <UpcomingCards leads={leads} onView={(l) => setViewing(l)} />
+        <UpcomingCards
+          leads={leads}
+          onView={(l) => setViewing(l)}
+          onChanged={load}
+        />
       )}
 
       <LeadFilters filters={filters} onChange={setFilters} />

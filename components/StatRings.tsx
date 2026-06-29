@@ -103,9 +103,22 @@ export default function StatRings({ leads }: Props) {
 
   const total = leads.length;
 
+  // Leads with no call status set yet — calls still pending.
+  const pendingCalls = useMemo(
+    () => leads.filter((l) => !(l.call_status || "").trim()).length,
+    [leads]
+  );
+  const pendingPct = total > 0 ? (pendingCalls / total) * 100 : 0;
+
   return (
     <div className="stat-rings">
       <Ring label="Total" count={total} pct={100} color="#1f2733" />
+      <Ring
+        label="Pending Calls"
+        count={pendingCalls}
+        pct={pendingPct}
+        color="#e11d48"
+      />
       {stats.map((s) => (
         <Ring
           key={s.key}

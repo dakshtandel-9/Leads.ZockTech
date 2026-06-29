@@ -38,3 +38,16 @@ export async function updateLead(
   });
   return parseJson<ApiWriteResponse>(res);
 }
+
+// Partial update for the dashboard "done" flags only (PATCH).
+export async function markDone(
+  inquiry_id: number,
+  patch: { follow_up_done?: boolean; meeting_done?: boolean }
+): Promise<ApiWriteResponse> {
+  const res = await fetch("/api/leads", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ inquiry_id, ...patch }),
+  });
+  return parseJson<ApiWriteResponse>(res);
+}
