@@ -27,6 +27,7 @@ export default function LeadTable({ leads, onView }: Props) {
             <th>Priority</th>
             <th>Call Status</th>
             <th>Call Message Detail</th>
+            <th>Additional Message</th>
             <th>Follow Up</th>
             <th>Meeting</th>
             <th>Retry Count</th>
@@ -84,6 +85,29 @@ export default function LeadTable({ leads, onView }: Props) {
                   </div>
                 ) : (
                   dash(lead.call_message_detail)
+                )}
+              </td>
+              <td className="cell-message">
+                {lead.additional_message ? (
+                  <div className="cell-message-inner">
+                    <span
+                      className="cell-message-text"
+                      title={lead.additional_message}
+                    >
+                      {lead.additional_message}
+                    </span>
+                    <button
+                      type="button"
+                      className="info-btn"
+                      aria-label="View full message"
+                      title="View details"
+                      onClick={() => onView(lead)}
+                    >
+                      ⓘ
+                    </button>
+                  </div>
+                ) : (
+                  dash(lead.additional_message)
                 )}
               </td>
               <td>{fmtDateTime(lead.follow_up_date)}</td>

@@ -38,6 +38,7 @@ function normalizePayload(body: LeadPayload) {
     lead_priority: str(body.lead_priority),
     call_status: str(body.call_status),
     call_message_detail: str(body.call_message_detail),
+    additional_message: str(body.additional_message),
     follow_up_date: str(body.follow_up_date),
     meeting_datetime: str(body.meeting_datetime),
     retry_count: body.retry_count === null || body.retry_count === undefined

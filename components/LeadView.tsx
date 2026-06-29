@@ -41,6 +41,9 @@ export default function LeadView({ lead }: { lead: Lead }) {
       <dt>Call / Message Detail</dt>
       <dd>{dash(lead.call_message_detail)}</dd>
 
+      <dt>Additional Message</dt>
+      <dd>{dash(lead.additional_message)}</dd>
+
       <dt>Follow Up Date</dt>
       <dd>{fmtDateTime(lead.follow_up_date)}</dd>
 

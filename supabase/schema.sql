@@ -11,6 +11,7 @@ create table if not exists public.leads (
   lead_priority       text,            -- 'High' | 'Medium' | 'Low'
   call_status         text,            -- see CALL_STATUS options
   call_message_detail text,
+  additional_message  text,
   follow_up_date      timestamptz,     -- date + time of next follow-up
   meeting_datetime    timestamptz,     -- fixed meeting date + time
   retry_count         integer default 0,
@@ -38,6 +39,8 @@ alter table public.leads
   add column if not exists meeting_datetime timestamptz;
 alter table public.leads
   add column if not exists send_proposal text;
+alter table public.leads
+  add column if not exists additional_message text;
 
 -- All access happens through server-side route handlers using the anon key.
 -- ---------------------------------------------------------------------------

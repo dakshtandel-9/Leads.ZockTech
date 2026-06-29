@@ -20,6 +20,7 @@ export interface Lead {
   lead_priority: LeadPriority | string | null;
   call_status: CallStatus | string | null;
   call_message_detail: string | null;
+  additional_message: string | null;
   follow_up_date: string | null;
   meeting_datetime: string | null;
   retry_count: number | null;
@@ -43,6 +44,7 @@ export interface LeadPayload {           // create/update; inquiry_id only on up
   lead_priority?: string | null;
   call_status?: string | null;
   call_message_detail?: string | null;
+  additional_message?: string | null;
   follow_up_date?: string | null;
   meeting_datetime?: string | null;
   retry_count?: number | null;

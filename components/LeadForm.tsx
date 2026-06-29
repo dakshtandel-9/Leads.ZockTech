@@ -69,6 +69,7 @@ type FormState = {
   lead_person: string;
   lead_status: string;
   call_message_detail: string;
+  additional_message: string;
   follow_up_date: string;
   meeting_datetime: string;
   retry_count: string;
@@ -90,6 +91,7 @@ function fromLead(initial?: Lead): FormState {
     lead_person: initial?.lead_person ?? "",
     lead_status: initial?.lead_status ?? "New",
     call_message_detail: initial?.call_message_detail ?? "",
+    additional_message: initial?.additional_message ?? "",
     follow_up_date: toDateTimeLocal(initial?.follow_up_date),
     meeting_datetime: toDateTimeLocal(initial?.meeting_datetime),
     retry_count:
@@ -151,6 +153,7 @@ export default function LeadForm({ mode, initial }: Props) {
       lead_priority: str(form.lead_priority),
       call_status: str(form.call_status),
       call_message_detail: str(form.call_message_detail),
+      additional_message: str(form.additional_message),
       follow_up_date: localInputToISO(form.follow_up_date),
       meeting_datetime: localInputToISO(form.meeting_datetime),
       retry_count: retry === null ? 0 : retry,
@@ -335,6 +338,14 @@ export default function LeadForm({ mode, initial }: Props) {
             rows={3}
             value={form.call_message_detail}
             onChange={(e) => set("call_message_detail", e.target.value)}
+          />
+        </div>
+        <div className="field">
+          <label>Additional Message</label>
+          <textarea
+            rows={3}
+            value={form.additional_message}
+            onChange={(e) => set("additional_message", e.target.value)}
           />
         </div>
       </div>
